@@ -11,67 +11,70 @@
 </head>
 
 <body>
-    <div id="word-container">
-        <input id="word" type="text" placeholder="Digita messaggio..." readonly>
-        <button id="read-button" onclick="readText()">
+    <div id="controller">
+        <button id="repeat-button">
+            <img src="img/repeat-icon.svg" width="40" height="40" alt="">
+        </button>
+        <div id="word-container">
+            <span id="word"></span>
+        </div>
+        <button id="read-button">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                 <path
                     d="M4.574 16.989c-1.768.647-3.719-.275-4.365-2.06-.647-1.785.262-3.757 2.027-4.404l3.242-1.187 2.338 6.464-3.242 1.187zm6.282 3.172c-.437-.151-.814-.43-1.089-.8l-1.635-2.202-3.301 1.209 2.602 3.353c.292.376.79.52 1.237.356l2.216-.81c.229-.084.382-.307.381-.553-.002-.246-.156-.464-.389-.545l-.022-.008zm-4.09-11.294l2.338 6.464c2.155-.417 5.077-.401 8.896.401l-4.675-12.927c-2.476 3.165-4.663 5.004-6.559 6.062zm10.795-3.102c.856.411 1.556 1.149 1.893 2.117.339.967.254 1.98-.157 2.836l1.407.678c.585-1.216.708-2.656.227-4.03-.481-1.375-1.474-2.424-2.689-3.009l-.681 1.408zm1.188-2.465c1.486.715 2.698 1.998 3.286 3.678s.438 3.441-.277 4.927l1.443.696c.893-1.857 1.079-4.055.346-6.153-.735-2.097-2.247-3.698-4.102-4.591l-.696 1.443z" />
             </svg>
         </button>
-        <button id="repeat-button" onclick="repeatLastText()">
-            <img src="img/repeat-icon.svg" width="40" height="40" alt="">
-        </button>
+
     </div>
 
     <!-- Quick words section -->
     <div id="quick-words"></div>
 
-    <div class="center">
+    <div id="keyboard">
         <div class="row">
-            <button onclick="addLetter('0')">0</button>
-            <button onclick="addLetter('1')">1</button>
-            <button onclick="addLetter('2')">2</button>
-            <button onclick="addLetter('3')">3</button>
-            <button onclick="addLetter('4')">4</button>
-            <button onclick="addLetter('5')">5</button>
-            <button onclick="addLetter('6')">6</button>
-            <button onclick="addLetter('7')">7</button>
-            <button onclick="addLetter('8')">8</button>
-            <button onclick="addLetter('9')">9</button>
+            <button>0</button>
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button>7</button>
+            <button>8</button>
+            <button>9</button>
         </div>
         <!-- Distribute letters in rows with QWERTY layout -->
         <div class="row">
-            <button onclick="addLetter('q')">Q</button>
-            <button onclick="addLetter('w')">W</button>
-            <button onclick="addLetter('e')">E</button>
-            <button onclick="addLetter('r')">R</button>
-            <button onclick="addLetter('t')">T</button>
-            <button onclick="addLetter('y')">Y</button>
-            <button onclick="addLetter('u')">U</button>
-            <button onclick="addLetter('i')">I</button>
-            <button onclick="addLetter('o')">O</button>
-            <button onclick="addLetter('p')">P</button>
+            <button>Q</button>
+            <button>W</button>
+            <button>E</button>
+            <button>R</button>
+            <button>T</button>
+            <button>Y</button>
+            <button>U</button>
+            <button>I</button>
+            <button>O</button>
+            <button>P</button>
         </div>
         <div class="row">
-            <button onclick="addLetter('a')">A</button>
-            <button onclick="addLetter('s')">S</button>
-            <button onclick="addLetter('d')">D</button>
-            <button onclick="addLetter('f')">F</button>
-            <button onclick="addLetter('g')">G</button>
-            <button onclick="addLetter('h')">H</button>
-            <button onclick="addLetter('j')">J</button>
-            <button onclick="addLetter('k')">K</button>
-            <button onclick="addLetter('l')">L</button>
+            <button>A</button>
+            <button>S</button>
+            <button>D</button>
+            <button>F</button>
+            <button>G</button>
+            <button>H</button>
+            <button>J</button>
+            <button>K</button>
+            <button>L</button>
         </div>
         <div class="row">
-            <button onclick="addLetter('z')">Z</button>
-            <button onclick="addLetter('x')">X</button>
-            <button onclick="addLetter('c')">C</button>
-            <button onclick="addLetter('v')">V</button>
-            <button onclick="addLetter('b')">B</button>
-            <button onclick="addLetter('n')">N</button>
-            <button onclick="addLetter('m')">M</button>
+            <button>Z</button>
+            <button>X</button>
+            <button>C</button>
+            <button>V</button>
+            <button>B</button>
+            <button>N</button>
+            <button>M</button>
             <button id="clear-button">
                 <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
                     viewBox="0 0 24 24" width="40" height="40" color="#FFFFFF" xmlns="http://www.w3.org/2000/svg">
@@ -81,13 +84,13 @@
                 </svg>
             </button>
         </div>
-
-        <button id="spacebar" onclick="addSpace()">SPAZIO</button>
+        <div class="row">
+            <button id="spacebar">SPAZIO</button>
+        </div>
     </div>
     <script src="js/js-confetti.browser.js"></script>
     <script src="js/quickwords.js"></script>
-    <script src="js/enable-fullscreen.js"></script>
-    <script src="js/duplicates-checker.js"></script>
+    <script src="js/keyboard.js"></script>
     <script src="js/main.js"></script>
 </body>
 

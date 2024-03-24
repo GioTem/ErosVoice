@@ -13,14 +13,121 @@
     /* Non-prefixed version, currently
                                     supported by Chrome, Edge, Opera and Firefox */
 }
-body{
-    background-color: #FAFAFA;
+
+*:focus {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
 }
+
+body {
+    margin: 0 10px;
+    background-color: #FAFAFA;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#controller {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px 0px 8px 0px;
+}
+
+#read-button {
+    background-color: #4CAF50;
+    fill: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 67px;
+    border: 1px solid #4CAF50;
+    margin-left: 10px;
+    border-radius: 50px;
+}
+
+#repeat-button {
+    background-color: #FF8F00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 67px;
+    border: 1px solid #FF8F00;
+    margin-right: 10px;
+    border-radius: 50px;
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
+
+#read-button>svg {
+    vertical-align: middle;
+    width: 100px;
+    height: 40px;
+}
+
+#word-container {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 50px;
+    padding: 0 20px;
+    overflow: auto;
+    height: 60px;
+}
+
+#word {
+    white-space: pre;
+    font-size: 50px;
+    color: #3b3938;
+}
+
+#word:empty::before {
+    content: 'Digita messaggio...';
+    color: #757575;
+}
+
+#word:not(:empty) {
+    border-right: .10em solid #ffa500;
+    animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+    50% { border-color: transparent; }
+}
+
+/* Styles for quick words section */
+#quick-words {
+    display: flex;
+    overflow-x: auto;
+    justify-content: left;
+    height: 60px;
+    color: #3b3938;
+}
+
+#quick-words>div {
+    padding: 5px 10px;
+    margin-right: 20px;
+    border: 1px solid #FFE082;
+    border-radius: 25px;
+    cursor: pointer;
+    user-select: none;
+    height: 45px;
+    white-space: nowrap;
+    font-size: 40px;
+    background-color: #FFFDE7;
+}
+
+
+#keyboard {
+    margin: 0 auto;
+    text-align: center;
+}
+
 /* Button styles */
 .row>button {
-    width: 70px;
-    height: 70px;
-    margin: 5px;
+    width: 78px;
+    height: 78px;
+    margin: 5px 7px;
     font-size: 24px;
     line-height: 24px;
     border-radius: 10px;
@@ -30,7 +137,7 @@ body{
 
 /* Style for Spacebar row */
 #spacebar {
-    width: 50%;
+    width: 65%;
     margin-top: 5px;
     height: 70px;
     font-size: 24px;
@@ -43,7 +150,7 @@ body{
 /* Aggiorna gli stili per il bottone clear-button */
 #clear-button {
     width: 150px;
-    height: 70px;
+    height: 78px;
     background-color: #EF5350;
     border: 1px solid #EF5350;
     vertical-align: top;
@@ -56,82 +163,4 @@ body{
     vertical-align: middle;
     width: 100px;
     height: 48px;
-}
-
-#read-button {
-    background-color: #4CAF50;
-    fill: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 57px;
-    height: 57px;
-    border: 1px solid #4CAF50;
-    margin-left: 10px;
-    border-radius: 50px;
-}
-
-#repeat-button {
-    background-color: #FF8F00;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 57px;
-    height: 57px;
-    border: 1px solid #FF8F00;
-    margin-left: 10px;
-    border-radius: 50px;
-    -webkit-transform: scaleX(-1);
-    transform: scaleX(-1);
-}
-
-#read-button>svg {
-    vertical-align: middle;
-    width: 100px;
-    height: 40px;
-}
-
-.center {
-    margin: 0 auto;
-    text-align: center;
-}
-
-#word-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 20px 0;
-}
-
-#word {
-    border-radius: 50px;
-    min-width: 600px;
-    min-height: 60px;
-    font-size: 50px;
-    border: 1px solid #ccc;
-    padding: 0 20px;
-    color: #3b3938;
-}
-
-/* Styles for quick words section */
-#quick-words {
-    display: flex;
-    overflow-x: auto;
-    justify-content: left;
-    margin-bottom: 10px;
-    height: 50px;
-    color: #3b3938;
-}
-
-#quick-words>div {
-    padding: 5px 10px;
-    margin-right: 5px;
-    border: 1px solid #FFE082;
-    border-radius: 25px;
-    cursor: pointer;
-    user-select: none;
-    height: 30px;
-    white-space: nowrap;
-    font-size: 25px;
-    background-color: #FFFDE7;
 }
