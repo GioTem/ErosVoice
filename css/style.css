@@ -1,0 +1,137 @@
+* {
+    -webkit-touch-callout: none !important;
+    /* iOS Safari */
+    -webkit-user-select: none !important;
+    /* Safari */
+    -khtml-user-select: none !important;
+    /* Konqueror HTML */
+    -moz-user-select: none !important;
+    /* Old versions of Firefox */
+    -ms-user-select: none !important;
+    /* Internet Explorer/Edge */
+    user-select: none !important;
+    /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+}
+body{
+    background-color: #FAFAFA;
+}
+/* Button styles */
+.row>button {
+    width: 70px;
+    height: 70px;
+    margin: 5px;
+    font-size: 24px;
+    line-height: 24px;
+    border-radius: 10px;
+    border: 1px solid #90CAF9;
+    background-color: #E3F2FD;
+}
+
+/* Style for Spacebar row */
+#spacebar {
+    width: 50%;
+    margin-top: 5px;
+    height: 70px;
+    font-size: 24px;
+    line-height: 24px;
+    border-radius: 10px;
+    border: 1px solid #90CAF9;
+    background-color: #E3F2FD;
+}
+
+/* Aggiorna gli stili per il bottone clear-button */
+#clear-button {
+    width: 150px;
+    height: 70px;
+    background-color: #EF5350;
+    border: 1px solid #EF5350;
+    vertical-align: top;
+    border-radius: 10px;
+    /* Allinea il bottone al top della riga */
+    fill: #ffffff;
+}
+
+#clear-button>svg {
+    vertical-align: middle;
+    width: 100px;
+    height: 48px;
+}
+
+#read-button {
+    background-color: #4CAF50;
+    fill: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 57px;
+    height: 57px;
+    border: 1px solid #4CAF50;
+    margin-left: 10px;
+    border-radius: 50px;
+}
+
+#repeat-button {
+    background-color: #FF8F00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 57px;
+    height: 57px;
+    border: 1px solid #FF8F00;
+    margin-left: 10px;
+    border-radius: 50px;
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
+
+#read-button>svg {
+    vertical-align: middle;
+    width: 100px;
+    height: 40px;
+}
+
+.center {
+    margin: 0 auto;
+    text-align: center;
+}
+
+#word-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+#word {
+    border-radius: 50px;
+    min-width: 600px;
+    min-height: 60px;
+    font-size: 50px;
+    border: 1px solid #ccc;
+    padding: 0 20px;
+    color: #3b3938;
+}
+
+/* Styles for quick words section */
+#quick-words {
+    display: flex;
+    overflow-x: auto;
+    justify-content: left;
+    margin-bottom: 10px;
+    height: 50px;
+    color: #3b3938;
+}
+
+#quick-words>div {
+    padding: 5px 10px;
+    margin-right: 5px;
+    border: 1px solid #FFE082;
+    border-radius: 25px;
+    cursor: pointer;
+    user-select: none;
+    height: 30px;
+    white-space: nowrap;
+    font-size: 25px;
+    background-color: #FFFDE7;
+}
