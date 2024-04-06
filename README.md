@@ -34,3 +34,16 @@ This project was born with the purpose of giving voice to a mute boy named Eros,
 - Enhance and refine quickword management, possibly utilizing JSON, and improve search functionality
 - Adopt a better TTS (Text-to-Speech) solution than the system's default
 - Explore a faster writing method
+
+## License
+
+This project is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License](LICENSE).
+
+### Attribution
+If you use or adapt this project, you must give appropriate credit by providing a link to the original repository and indicating if changes were made. You must also include a copy of the license.
+
+### Non-Commercial Use
+You are free to use this project for non-commercial purposes only. Any commercial use is prohibited.
+
+For more details, please see the [LICENSE](LICENSE) file.
+
