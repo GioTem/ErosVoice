@@ -84,10 +84,9 @@ class SingleTapKeyboard extends Keyboard {
             btn.addEventListener('touchstart', ev => this.handleKeyboardButtons(ev));
         });
         this.#eventList.forEach(el => this.clearButton.addEventListener(el, this.handleClearButton.bind(this)));
-        this.quickWord.quickWordsContainer.addEventListener('click', this.quickWord.handleQuickWordClick); // TODO controllare se va bene click o bisogna usare il touchStart
+        this.quickWord.quickWordsContainer.addEventListener('touchstart', this.quickWord.handleQuickWordClick); 
     }
 
-    // Funzione per gestire il click prolungato sul pulsante clear
     handleClearButton(ev) {
         if (ev.type == 'touchstart') {
             this.#clearButtonTimer = setTimeout(() => {
@@ -95,12 +94,12 @@ class SingleTapKeyboard extends Keyboard {
                 this.clearText();
                 updateText();
                 this.quickWord.filterQuickWords(this.filterText);
-            }, 1000); // Tempo in millisecondi per considerare un click prolungato
+            }, 1000); 
         }
         else {
             ev.preventDefault();
             this.deleteLastCharacter();
-            clearTimeout(this.#clearButtonTimer); // Interrompe il timer
+            clearTimeout(this.#clearButtonTimer);
         }
     }
 
@@ -129,7 +128,7 @@ class TapAndHoldKeyboard extends Keyboard {
         this.quickWord.quickWordsContainer.addEventListener('touchend', this.handleKeyboardButtons.bind(this));
         this.#eventList.forEach(el => this.clearButton.addEventListener(el, this.handleClearButton.bind(this)));
         this.#eventList.forEach(el => this.clearButton.addEventListener(el, this.handleClearButtonLongPress.bind(this)));
-        this.delay = delay; // Tempo in millisecondi per considerare un click prolungato
+        this.delay = delay; 
     }
 
     handleKeyboardButtons(ev) {
@@ -157,10 +156,10 @@ class TapAndHoldKeyboard extends Keyboard {
             this.#clearButtonTimer = setTimeout(() => {
                 ev.preventDefault();
                 this.deleteLastCharacter();
-            }, this.delay); // Tempo in millisecondi per considerare un click prolungato
+            }, this.delay);
         }
         else {
-            clearTimeout(this.#clearButtonTimer); // Interrompe il timer
+            clearTimeout(this.#clearButtonTimer);
         }
     }
 
@@ -171,10 +170,10 @@ class TapAndHoldKeyboard extends Keyboard {
                 this.clearText();
                 updateText();
                 this.quickWord.filterQuickWords(this.filterText);
-            }, this.delay*4); // Tempo in millisecondi per considerare un click prolungato
+            }, this.delay*4);
         }
         else {
-            clearTimeout(this.#clearButtonLongPressTimer); // Interrompe il timer
+            clearTimeout(this.#clearButtonLongPressTimer);
         }
     }
 
@@ -183,5 +182,6 @@ class TapAndHoldKeyboard extends Keyboard {
 class DragAndReleaseKeyboard extends Keyboard {
     constructor() {
         super();
+        throw new Error('This method is not yet implemented');
     }
 }

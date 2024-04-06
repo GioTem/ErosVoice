@@ -10,8 +10,7 @@
     -ms-user-select: none !important;
     /* Internet Explorer/Edge */
     user-select: none !important;
-    /* Non-prefixed version, currently
-                                    supported by Chrome, Edge, Opera and Firefox */
+    /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 
 *:focus {
@@ -91,11 +90,13 @@ body {
     border-right: .10em solid #ffa500;
     animation: blink 1s step-end infinite;
 }
+
 @keyframes blink {
-    50% { border-color: transparent; }
+    50% {
+        border-color: transparent;
+    }
 }
 
-/* Styles for quick words section */
 #quick-words {
     display: flex;
     overflow-x: auto;
@@ -123,7 +124,6 @@ body {
     text-align: center;
 }
 
-/* Button styles */
 .row>button {
     width: 78px;
     height: 78px;
@@ -135,7 +135,6 @@ body {
     background-color: #E3F2FD;
 }
 
-/* Style for Spacebar row */
 #spacebar {
     width: 65%;
     margin-top: 5px;
@@ -147,7 +146,6 @@ body {
     background-color: #E3F2FD;
 }
 
-/* Aggiorna gli stili per il bottone clear-button */
 #clear-button {
     width: 150px;
     height: 78px;
@@ -155,7 +153,6 @@ body {
     border: 1px solid #EF5350;
     vertical-align: top;
     border-radius: 10px;
-    /* Allinea il bottone al top della riga */
     fill: #ffffff;
 }
 
@@ -163,4 +160,17 @@ body {
     vertical-align: middle;
     width: 100px;
     height: 48px;
+}
+
+@media screen and (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
+    html {
+        transform: rotate(-90deg);
+        transform-origin: left top;
+        width: 100vh;
+        height: 100vw;
+        overflow-x: hidden;
+        position: absolute;
+        top: 100%;
+        left: 0;
+    }
 }

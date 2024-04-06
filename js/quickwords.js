@@ -120,7 +120,7 @@ class QuickWord {
     }
 
     filterQuickWords(value) {
-        this.quickWordsContainer.innerHTML = ''; // Clear quick words container
+        this.quickWordsContainer.innerHTML = '';
         const filterText = value.toLowerCase().trim();
         if (filterText === '') {
             // Show all quick words if no filter text
