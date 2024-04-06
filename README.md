@@ -1,7 +1,7 @@
 # Eros's Voice
 ![originale](https://github.com/GioTem/ErosVoice/assets/30293839/59e52f5a-f4e0-4331-b9c2-8f7a9a94d612)
 
-Synthesized AAC voice for design on a 7" tablet (only landscape).
+Synthesized AAC voice with custom keyboard designed for use on a 7-inch tablet (in landscape orientation only).
 
 ## Description
 
@@ -24,3 +24,13 @@ This project was born with the purpose of giving voice to a mute boy named Eros,
   1. Open the link http://127.0.0.1:8080
   2. Select the three vertical dots in the top right corner and select "Add to home screen"
 - Have fun with this
+
+## Customizations
+- In the main.js file, you can change the writing method (Currently only SINGLE_TAP_KEY and TAP_AND_HOLD_KEY) and the time expressed in ms that represents how long to hold down the keys in TAP_AND_HOLD_KEY mode
+- In the quickWords file, you can update the #quickWords variable by adding new quickwords
+
+## Coming soon
+- Migration to TypeScript (Perhaps with some framework)
+- Enhance and refine quickword management, possibly utilizing JSON, and improve search functionality
+- Adopt a better TTS (Text-to-Speech) solution than the system's default
+- Explore a faster writing method
