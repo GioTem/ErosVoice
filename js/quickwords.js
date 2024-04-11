@@ -8,7 +8,7 @@ class QuickWord {
         "Venerdí", "Sabato", "Domenica", "Gennaio", "Febbraio",
         "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Soldi",
         "Settembre", "Ottobre", "Novembre", "Dicembre", "Mi manchi!",
-        "Ho una notizia", "Sbagliato", "Borsone", "Bellaria","Borsello",
+        "Ho una notizia", "Sbagliato", "Borsone", "Bellaria", "Borsello",
         "Giusto", "ANFFAS", "Forse", "Scusa", "Pace", "Cuffia", "Costume", "Ciabatte",
         "Sciopero", "Scherzo", "Carrozzina", "Pullman", "Pulmino",
         "Mare", "Montagna", "Colazione", "Pranzo", "Cena", "Merenda",
@@ -16,7 +16,7 @@ class QuickWord {
         "Domanda", "Risposta", "Salutate", "Ti aspetto", "Ti presento",
         "Viene...", "Volontario", "Volontaria", "Indovina...", "Nebbia", "Pioggia",
         "Vento", "Sole", "Già", "Vigilia", "Edicola", "Fisioterapista", "Fisioterapia",
-        "Quadrifogli", "OFTAL", "AIAS.", "Weekend", "Piscina", 
+        "Quadrifogli", "OFTAL", "AIAS", "Weekend", "Piscina",
         "Giornale", "Toast", "Ferie", "Mi raccomando", "Kway",
         "Bello", "Brutto", "Caldo", "Freddo", "Triste", "Allegro",
         "Appuntamento", "Alto", "Basso", "Magro", "Grasso", "Aperto",
@@ -31,7 +31,7 @@ class QuickWord {
         "Cappuccino", "Shakerato", "Pavesini", "Chiara",
         "Colori", "Bianco", "Nero", "Arancione", "Azzurro", "Blu",
         "Grigio", "Marrone", "Rosso", "Rosa", "Verde", "Giallo",
-        "Viola", "Turchese", "Bordeaux", "Minuti", "Secondi", "Zaino", 
+        "Viola", "Turchese", "Bordeaux", "Minuti", "Secondi", "Zaino",
         "Rispetto", "Elisabetta", "Schiscetta", "Pedane", "Pelvica",
         "Potrei avere il menù per favore?", "Posso sedermi vicino a te?",
         "Che dolci avete?", "Mi piacciono tutti i dolci",
@@ -69,7 +69,7 @@ class QuickWord {
         "Divano", "Cucina", "Tavolo", "Sedie", "Frigorifero", "Lavastoviglie",
         "Lavello", "Forno", "Sala da pranzo", "Tinello", "Camera da letto",
         "Armadio", "Cassettone", "Letto", "Studio", "Scrivania", "Libreria", "Lavare",
-        "Ripostiglio", "Scaffali", "Servizi", "Bagno", "Doccia", "Bidet", "Profumo", 
+        "Ripostiglio", "Scaffali", "Servizi", "Bagno", "Doccia", "Bidet", "Profumo",
         "Saponetta", "Asciugamano", "Spazzolino da denti", "Dentifricio", "Dolore",
         "Pettine", "Asciugacapelli", "Risotto zafferano e porcini", "Cotechino con lenticchie",
         "Cappone ripieno", "Filetto platessa", "Vitello tonnato", "Minestra di orzo",
@@ -102,7 +102,7 @@ class QuickWord {
         "Da", "Di", "In", "Con", "Su", "Per", "Tra", "Fra", "Chiamo", "Sono", "Ho", "Vai", "Felice", "Mi", "Giordano", "Estefania", "Stefania", "Abel",
         "Letizia", "Rudina", "Giulia", "Sara", "Tatiana", "Barbara", "Francesco", "Caterina", "Massimiliano", "Manolo", "Sergio", "Andrea", "Simone", "Marco", "Luca", "Nino", "Vittorio", "Mara",
         "Spillo", "Whatsapp", "Facebook", "YouTube", "YouTube Music", "Mediaset", "Infinity", "Rai 1", "Rai 2", "Rai 3", "Rete 4", "Canale 5", "Italia 1",
-        "Cine 34", "Radio Birikina", "Internet", "Mille"
+        "Cine 34", "Radio Birikina", "Internet", "Mille", "CDD", "Diurno", "RSD", "Residenziale", "Villa Gregotti", "ACM", "Casa Malva", "Shasa", "Pinato", "Alberto", "Flavio", "Educatore", "Oss", "Sara Cundari", "Infermiere", "Rebecca", "Lella", "Bocca", "Occhio", "Testa", "Lingua", "Ginocchio", "Dito", "Naso", "Pancia", "Unghia", "Stomaco", "Capelli", "Orecchie", "Polpaccio", "Estetista", "Parrucchiere", "Messa", "Dio", "Gesù", "Madonna", "Preghiera", "Rosario", "Croce", "Crocifisso", "Comunione", "Ostia", "Dama", "Barelliere", "Cibo", "Deodorante", "Pigiama", "Attività", "Messaggio", "Chiamata", "Maglietta", "Camicia", "Tuta", "Pantalone", "Giacca", "Felpa", "Mutande", "Calzini", "Canotta", "Smanicato", "Documenti", "Moneta", "Pellicina", "Orologio", "Quaderno", "Foglio", "Penna", "Matita", "Pittura", "Dipingere", "Bustina", "Medicina", "Mese", "Calendario", "Innamorato", "Amore"
     ];
     #sortedquickWords;
 
