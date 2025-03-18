@@ -185,3 +185,8 @@ class DragAndReleaseKeyboard extends Keyboard {
         throw new Error('This method is not yet implemented');
     }
 }
+
+// Aggiungi in fondo al file
+document.body.innerHTML += `
+    <input type="file" id="importInput" hidden>
+`;

@@ -5,7 +5,7 @@ const repeatButton = document.getElementById('repeat-button');
 let keyboard;
 
 const settings = {
-    version: "1.0.2",
+    version: "1.1.0'",
     input_mode: Keyboard.mode.SINGLE_TAP_KEY,
     input_delay: 500 //ms
 };
@@ -81,6 +81,19 @@ function readText() {
                 var audio = new Audio("audio/tanti_auguri_a_te.mp3");
                 audio.play();
                 break;
+            case 'eros importdb':
+                document.getElementById('importInput').click();
+                keyboard.clearText();
+                updateText();
+                break;
+            case 'eros exportdb':
+                exportDictionary();
+                keyboard.clearText();
+                updateText();
+                break;
+            case 'eros cleardb':
+                localStorage.clear();
+                break
             default:
                 // Create a SpeechSynthesisUtterance object to read the word
                 const message = new SpeechSynthesisUtterance(keyboard.getText());
@@ -96,8 +109,54 @@ function readText() {
         keyboard.clearText();
     }
     keyboard.clearFilterText()
-    keyboard.quickWord.filterQuickWords(''); // TODO IMPORVE
+    keyboard.quickWord.filterQuickWords('');
     updateText();
 }
 
+function openDictionaryModal() {
+    const modal = document.getElementById('dictionary-modal');
+    const wordList = document.getElementById('word-list');
+    const text = keyboard.getText();
+    
+    const seen = new Set();
+    const currentText = text.split(' ')
+        .filter(w => w !== '')
+        .filter(word => {
+            const lower = word.toLowerCase();
+            const isNew = !seen.has(lower);
+            seen.add(lower);
+            return isNew;
+        });
+
+    wordList.innerHTML = currentText.map(word => {
+        const exists = keyboard.quickWord.wordExists(word);
+        return `
+            <label class="word-item ${exists ? 'exists' : ''}">
+                <input type="checkbox" ${exists ? 'disabled' : 'checked'}>
+                ${word}
+            </label>
+        `;
+    }).join('');
+
+    modal.style.display = 'block';
+
+    document.getElementById('modal-ok').onclick = () => {
+        const checkboxes = wordList.querySelectorAll('input:checked:not(:disabled)');
+        checkboxes.forEach(checkbox => {
+            const word = checkbox.parentElement.textContent.trim();
+            if (!keyboard.quickWord.wordExists(word)) {
+                keyboard.quickWord.addWord(word);
+            }
+        });
+        modal.style.display = 'none';
+    };
+
+    document.getElementById('modal-cancel').onclick = () => {
+        modal.style.display = 'none';
+    };
+}
+
+document.getElementById('manage-dictionary').addEventListener('click', openDictionaryModal);
+
 init();
+
