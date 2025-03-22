@@ -81,10 +81,10 @@ class SingleTapKeyboard extends Keyboard {
     constructor() {
         super();
         this.keyList.forEach(btn => {
-            btn.addEventListener('touchstart', ev => this.handleKeyboardButtons(ev));
+            btn.addEventListener('touchstart', ev => this.handleKeyboardButtons(ev), { passive: true });
         });
-        this.#eventList.forEach(el => this.clearButton.addEventListener(el, this.handleClearButton.bind(this)));
-        this.quickWord.quickWordsContainer.addEventListener('touchstart', this.quickWord.handleQuickWordClick); 
+        this.#eventList.forEach(el => this.clearButton.addEventListener(el, this.handleClearButton.bind(this), { passive: true }));
+        this.quickWord.quickWordsContainer.addEventListener('touchstart', this.quickWord.handleQuickWordClick, { passive: true }); 
     }
 
     handleClearButton(ev) {
@@ -97,7 +97,6 @@ class SingleTapKeyboard extends Keyboard {
             }, 1000); 
         }
         else {
-            ev.preventDefault();
             this.deleteLastCharacter();
             clearTimeout(this.#clearButtonTimer);
         }

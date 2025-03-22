@@ -160,17 +160,15 @@ body {
 }
 
 .quick-word.sentence {
-    background: #6495ed;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 20px;
+    background: #ddefcd !important;
+    border: 1px solid #3bc040 !important;
 }
 
-.quick-word.word {
-    background: #f0f0f0;
-    color: #333;
+.no-content {
+    color: #757575;
+    font-style: italic;
+    padding: 10px;
 }
-
 
 #keyboard {
     margin: 0 auto;

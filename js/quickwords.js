@@ -6,19 +6,28 @@ class QuickWord {
         this.quickWordsContainer = document.getElementById('quick-words');
         this.loadFromStorage();
         this.setupImport();
-        this.generateQuickWords();
+        this.filterQuickWords('');
     }
 
     loadFromStorage() {
-        const storedWords = sessionStorage.getItem('dictionary');
-        if(storedWords) {
-            this.#quickWords = JSON.parse(storedWords);
-        } 
-        this.#sortedquickWords = [...this.#quickWords];
+        const storedData = sessionStorage.getItem('languageData');
+        if(storedData) {
+            const data = JSON.parse(storedData);
+            this.sentences = data.sentences || [];
+            this.dictionary = data.dictionary || [];
+        } else {
+            this.sentences = [];
+            this.dictionary = [];
+        }
+        this.sortWords();
     }
 
     saveToStorage() {
-        sessionStorage.setItem('dictionary', JSON.stringify(this.#quickWords));
+        const data = {
+            sentences: this.sentences,
+            dictionary: this.dictionary
+        };
+        sessionStorage.setItem('languageData', JSON.stringify(data));
     }
 
     addWord(word) {
@@ -29,7 +38,6 @@ class QuickWord {
             this.sortWords();
             this.saveToStorage();
             this.filterQuickWords('');
-            this.generateQuickWords();
         }
     }
 
@@ -40,7 +48,6 @@ class QuickWord {
         this.sortWords();
         this.saveToStorage();
         this.filterQuickWords('');
-        this.generateQuickWords();
     }
 
     sortWords() {
@@ -59,10 +66,19 @@ class QuickWord {
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     try {
-                        const importedWords = JSON.parse(event.target.result);
-                        const merged = [...new Set([...this.#quickWords, ...importedWords])];
-                        this.#quickWords = merged;
-                        this.saveToStorage(); // Ora usa sessionStorage
+                        const importedData = JSON.parse(event.target.result);
+                        
+                        this.sentences = [...new Set([
+                            ...this.sentences, 
+                            ...(importedData.sentences || [])
+                        ])];
+                        
+                        this.dictionary = [...new Set([
+                            ...this.dictionary,
+                            ...(importedData.dictionary || [])
+                        ])];
+                        
+                        this.saveToStorage();
                         this.filterQuickWords('');
                     } catch(error) {
                         alert('Errore durante l\'importazione: Formato file non valido');
@@ -73,39 +89,40 @@ class QuickWord {
         });
     }
 
-    getWords() {
-        return this.#quickWords;
+    handleManageDictionary(wordsToAdd) {
+        this.dictionary = [...new Set([...this.dictionary, ...wordsToAdd])];
+        this.sortWords();
+        this.saveToStorage();
     }
 
-    generateQuickWords() {
-        this.quickWordsContainer.innerHTML = '';
-        this.#quickWords.slice(0, 20).forEach(word => {
-            this.addQuickWord(word);
-        });
-        this.quickWordsContainer.scrollLeft = 0;
+    getWords() {
+        return this.#quickWords;
     }
 
     filterQuickWords(value) {
         this.quickWordsContainer.innerHTML = '';
         const filterText = value.toLowerCase().trim();
         
-        if (filterText === '') {
-            this.generateQuickWords();
+        // Mostra tutte le frasi se non c'è filtro
+        if (!filterText) {
+            this.sentences.forEach(sentence => {
+                this.addQuickWord(sentence, true);
+            });
             return;
         }
         
-        this.#sortedquickWords.sort((a, b) => a.length - b.length).forEach(word => {
-            if (word.toLowerCase().startsWith(filterText)) {
-                this.addQuickWord(word)
-            }
-        });
-        this.quickWordsContainer.scrollLeft = 0;
+        // Mostra suggerimenti dal dizionario
+        this.dictionary
+            .filter(word => word.toLowerCase().startsWith(filterText))
+            .forEach(word => {
+                this.addQuickWord(word);
+            });
     }
 
-    addQuickWord(word) {
+    addQuickWord(content, isSentence = false) {
         const div = document.createElement('DIV');
-        div.classList.add('quick-word')
-        div.textContent = word;
+        div.classList.add('quick-word', isSentence ? 'sentence' : 'word');
+        div.textContent = content;
         this.quickWordsContainer.appendChild(div);
     }
 
@@ -126,25 +143,18 @@ class QuickWord {
     }
 }
 
-function handleAddWord() {
-    const input = document.getElementById('dictInput');
-    keyboard.quickWord.addWord(input.value);
-    input.value = '';
-}
-
-function handleRemoveWord() {
-    const input = document.getElementById('dictInput');
-    keyboard.quickWord.removeWord(input.value);
-    input.value = '';
-}
-
 function exportDictionary() {
-    const dataStr = JSON.stringify(keyboard.quickWord.getWords());
+    const data = {
+        sentences: keyboard.quickWord.sentences,
+        dictionary: keyboard.quickWord.dictionary
+    };
+    
+    const dataStr = JSON.stringify(data);
     const blob = new Blob([dataStr], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `dictionary-export-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `language-data-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
 }

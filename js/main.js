@@ -6,7 +6,7 @@ const manageDictionaryButton = document.getElementById('manage-dictionary');
 let keyboard;
 
 const settings = {
-    version: "1.1.0'",
+    version: "2.0.0'",
     input_mode: Keyboard.mode.SINGLE_TAP_KEY,
     input_delay: 500 //ms
 };
@@ -28,28 +28,33 @@ function init() {
     }
     const eventList = ["touchstart", "touchend", "touchcancel"];
     // READ BUTTON
-    eventList.forEach(el => readButton.addEventListener(el, ev => setTimeout(() => {
-        if (ev.type == 'touchstart') {
-            timer = setTimeout(() => {
-                readText();
-            }, settings.input_mode != Keyboard.mode.TAP_AND_HOLD_KEY ? 0 : settings.input_delay);
-        }
-        else {
-            clearTimeout(timer);
-        }
-    }, settings.input_delay)));
+    eventList.forEach(el => readButton.addEventListener(el, ev => {
+        setTimeout(() => {
+            if (ev.type === 'touchstart') {
+                timer = setTimeout(() => {
+                    readText();
+                }, settings.input_mode !== Keyboard.mode.TAP_AND_HOLD_KEY ? 0 : settings.input_delay);
+            } else {
+                clearTimeout(timer);
+            }
+        }, settings.input_delay);
+    }, { passive: true })
+    );
 
     //REPEAT BUTTON
-    eventList.forEach(el => repeatButton.addEventListener(el, ev => setTimeout(() => {
-        if (ev.type == 'touchstart') {
-            timer = setTimeout(() => {
-                keyboard.repeatLastText();
-            }, settings.input_mode != Keyboard.mode.TAP_AND_HOLD_KEY ? 0 : settings.input_delay);
-        }
-        else {
-            clearTimeout(timer);
-        }
-    }, settings.input_delay)));
+    eventList.forEach(el =>
+        repeatButton.addEventListener(el, ev => {
+            setTimeout(() => {
+                if (ev.type === 'touchstart') {
+                    timer = setTimeout(() => {
+                        keyboard.repeatLastText();
+                    }, settings.input_mode !== Keyboard.mode.TAP_AND_HOLD_KEY ? 0 : settings.input_delay);
+                } else {
+                    clearTimeout(timer);
+                }
+            }, settings.input_delay);
+        }, { passive: el === 'touchstart' })
+    );
 }
 
 function updateText() {
@@ -95,7 +100,7 @@ function readText() {
                 updateText();
                 break;
             case 'eros db clear':
-                localStorage.clear();
+                sessionStorage.clear();
                 break
             default:
                 // Create a SpeechSynthesisUtterance object to read the word
@@ -119,26 +124,19 @@ function readText() {
 function openDictionaryModal() {
     const modal = document.getElementById('dictionary-modal');
     const wordList = document.getElementById('word-list');
-    const text = keyboard.getText();
+    const currentText = keyboard.getText();
 
-    const seen = new Set();
-    const currentText = text.split(' ')
-        .filter(w => w !== '')
-        .filter(word => {
-            const lower = word.toLowerCase();
-            const isNew = !seen.has(lower);
-            seen.add(lower);
-            return isNew;
-        });
+    const words = currentText.split(' ')
+        .map(w => w.trim())
+        .filter(w => w.length >= 2 && !keyboard.quickWord.wordExists(w));
 
-    wordList.innerHTML = currentText
-    .filter(word => {
-        const trimmedWord = word.trim();
-        return trimmedWord.length >= 2 && !keyboard.quickWord.wordExists(trimmedWord);
-    })
-    .map(word => `
-        <label class="word-item">
-            <input type="checkbox" checked>
+    // Aggiunto index come secondo parametro del map
+    wordList.innerHTML = words.map((word, index) => `
+        <label class="word-item" for="word-${index}">
+            <input type="checkbox" 
+                   id="word-${index}" 
+                   name="dictionary-word" 
+                   checked>
             ${word}
         </label>
     `).join('');
@@ -146,14 +144,12 @@ function openDictionaryModal() {
     modal.style.display = 'block';
 
     document.getElementById('modal-ok').onclick = () => {
-        const checkboxes = wordList.querySelectorAll('input:checked:not(:disabled)');
-        checkboxes.forEach(checkbox => {
-            const word = checkbox.parentElement.textContent.trim();
-            if (!keyboard.quickWord.wordExists(word)) {
-                keyboard.quickWord.addWord(word);
-            }
-        });
+        const selectedWords = [...wordList.querySelectorAll('input:checked')]
+            .map(checkbox => checkbox.parentElement.textContent.trim());
+
+        keyboard.quickWord.handleManageDictionary(selectedWords);
         modal.style.display = 'none';
+        updateText();
     };
 
     document.getElementById('modal-cancel').onclick = () => {
