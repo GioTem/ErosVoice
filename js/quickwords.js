@@ -24,8 +24,8 @@ class QuickWord {
 
     saveToStorage() {
         const data = {
-            sentences: this.sentences,
-            dictionary: this.dictionary
+            sentences: this.sentences.map(s => s.toLowerCase()),
+            dictionary: this.dictionary.map(w => w.toLowerCase())
         };
         sessionStorage.setItem('languageData', JSON.stringify(data));
     }
@@ -68,20 +68,26 @@ class QuickWord {
                     try {
                         const importedData = JSON.parse(event.target.result);
                         
-                        this.sentences = [...new Set([
-                            ...this.sentences, 
-                            ...(importedData.sentences || [])
-                        ])];
+                        // Converti tutto in minuscolo
+                        this.sentences = [
+                            ...new Set([
+                                ...this.sentences,
+                                ...(importedData.sentences || []).map(s => s.toLowerCase())
+                            ])
+                        ];
                         
-                        this.dictionary = [...new Set([
-                            ...this.dictionary,
-                            ...(importedData.dictionary || [])
-                        ])];
+                        this.dictionary = [
+                            ...new Set([
+                                ...this.dictionary,
+                                ...(importedData.dictionary || []).map(w => w.toLowerCase())
+                            ])
+                        ];
                         
+                        this.sortWords();
                         this.saveToStorage();
                         this.filterQuickWords('');
                     } catch(error) {
-                        alert('Errore durante l\'importazione: Formato file non valido');
+                        alert('Formato file non valido');
                     }
                 };
                 reader.readAsText(file);
@@ -89,8 +95,15 @@ class QuickWord {
         });
     }
 
-    handleManageDictionary(wordsToAdd) {
-        this.dictionary = [...new Set([...this.dictionary, ...wordsToAdd])];
+    handleManageDictionary(selectedWords) {
+        const newWords = selectedWords
+            .map(word => word.trim().toLowerCase())
+            .filter(word => 
+                word.length >= 2 && 
+                !this.dictionary.includes(word)
+            );
+        
+        this.dictionary = [...new Set([...this.dictionary, ...newWords])];
         this.sortWords();
         this.saveToStorage();
     }
@@ -138,8 +151,7 @@ class QuickWord {
     }
 
     wordExists(word) {
-        const lowerWord = word.toLowerCase();
-        return this.#quickWords.some(w => w.toLowerCase() === lowerWord);
+        return this.dictionary.includes(word.toLowerCase());
     }
 }
 

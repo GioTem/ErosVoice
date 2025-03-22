@@ -85,7 +85,6 @@ body {
     height: 100%;
     overflow-x: auto;
     padding-right: 60px;
-    /* Aumentato spazio per il pulsante */
     scrollbar-width: none;
     -ms-overflow-style: none;
     display: flex;
@@ -100,7 +99,6 @@ body {
     white-space: pre;
     font-size: 50px;
     color: #3b3938;
-    padding-right: 10px;
 }
 
 #word:empty::before {
@@ -151,7 +149,7 @@ body {
     margin-right: 20px;
     border: 1px solid #FFE082;
     border-radius: 25px;
-
+    text-transform: capitalize!important;
     user-select: none;
     height: 45px;
     white-space: nowrap;
@@ -162,12 +160,6 @@ body {
 .quick-word.sentence {
     background: #ddefcd !important;
     border: 1px solid #3bc040 !important;
-}
-
-.no-content {
-    color: #757575;
-    font-style: italic;
-    padding: 10px;
 }
 
 #keyboard {
@@ -298,33 +290,11 @@ button {
 }
 
 #modal-cancel {
-    background-color: transparent;
-    color: #6200ea;
-}
-
-#modal-cancel:hover {
-    background-color: rgba(98, 0, 234, 0.1);
-}
-
-#modal-cancel:focus {
-    box-shadow: 0 0 0 4px rgba(98, 0, 234, 0.3);
-}
-
-#modal-ok {
-    background-color: #6200ea;
+    background-color: #EF5350;
     color: #ffffff;
 }
 
-#modal-ok:hover {
-    background-color: #3700b3;
-}
-
-#modal-ok:focus {
-    box-shadow: 0 0 0 4px rgba(98, 0, 234, 0.3);
-}
-
-button:disabled {
-    background-color: #bdbdbd;
-    color: #757575;
-    cursor: not-allowed;
+#modal-ok {
+    background-color: #4CAF50;
+    color: #ffffff;
 }

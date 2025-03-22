@@ -127,10 +127,9 @@ function openDictionaryModal() {
     const currentText = keyboard.getText();
 
     const words = currentText.split(' ')
-        .map(w => w.trim())
+    .map(w => w.trim().replace(/\?/g, ''))
         .filter(w => w.length >= 2 && !keyboard.quickWord.wordExists(w));
 
-    // Aggiunto index come secondo parametro del map
     wordList.innerHTML = words.map((word, index) => `
         <label class="word-item" for="word-${index}">
             <input type="checkbox" 
@@ -145,7 +144,9 @@ function openDictionaryModal() {
 
     document.getElementById('modal-ok').onclick = () => {
         const selectedWords = [...wordList.querySelectorAll('input:checked')]
-            .map(checkbox => checkbox.parentElement.textContent.trim());
+            .map(checkbox =>
+                checkbox.parentElement.textContent.trim().toLowerCase()
+            );
 
         keyboard.quickWord.handleManageDictionary(selectedWords);
         modal.style.display = 'none';
