@@ -1,7 +1,8 @@
 const wordDisplay = document.getElementById('word');
-const wordContainer = document.getElementById('word-container')
+const wordContainerScrollWrapper = document.querySelector("#word-container > .scroll-wrapper");
 const readButton = document.getElementById('read-button');
 const repeatButton = document.getElementById('repeat-button');
+const manageDictionaryButton = document.getElementById('manage-dictionary');
 let keyboard;
 
 const settings = {
@@ -52,8 +53,10 @@ function init() {
 }
 
 function updateText() {
-    wordDisplay.innerText = keyboard.getText();
-    wordContainer.scrollLeft = wordContainer.scrollWidth - wordContainer.clientWidth;
+    const currentText = keyboard.getText();
+    wordDisplay.innerText = currentText;
+    wordContainerScrollWrapper.scrollLeft = wordContainerScrollWrapper.scrollWidth - wordContainerScrollWrapper.clientWidth;
+    manageDictionaryButton.style.display = currentText.trim().length > 0 ? 'block' : 'none';
 }
 
 // Function to read the word aloud
@@ -61,7 +64,7 @@ function readText() {
     let tmp = keyboard.getText().trim().toLocaleLowerCase();
     if (tmp !== '') {
         switch (tmp) {
-            case 'info':
+            case 'eros info':
                 alert("Software version: V" + settings.version);
                 keyboard.clearText()
                 break;
@@ -81,17 +84,17 @@ function readText() {
                 var audio = new Audio("audio/tanti_auguri_a_te.mp3");
                 audio.play();
                 break;
-            case 'eros importdb':
+            case 'eros db import':
                 document.getElementById('importInput').click();
                 keyboard.clearText();
                 updateText();
                 break;
-            case 'eros exportdb':
+            case 'eros db export':
                 exportDictionary();
                 keyboard.clearText();
                 updateText();
                 break;
-            case 'eros cleardb':
+            case 'eros db clear':
                 localStorage.clear();
                 break
             default:
@@ -117,7 +120,7 @@ function openDictionaryModal() {
     const modal = document.getElementById('dictionary-modal');
     const wordList = document.getElementById('word-list');
     const text = keyboard.getText();
-    
+
     const seen = new Set();
     const currentText = text.split(' ')
         .filter(w => w !== '')
@@ -128,15 +131,17 @@ function openDictionaryModal() {
             return isNew;
         });
 
-    wordList.innerHTML = currentText.map(word => {
-        const exists = keyboard.quickWord.wordExists(word);
-        return `
-            <label class="word-item ${exists ? 'exists' : ''}">
-                <input type="checkbox" ${exists ? 'disabled' : 'checked'}>
-                ${word}
-            </label>
-        `;
-    }).join('');
+    wordList.innerHTML = currentText
+    .filter(word => {
+        const trimmedWord = word.trim();
+        return trimmedWord.length >= 2 && !keyboard.quickWord.wordExists(trimmedWord);
+    })
+    .map(word => `
+        <label class="word-item">
+            <input type="checkbox" checked>
+            ${word}
+        </label>
+    `).join('');
 
     modal.style.display = 'block';
 

@@ -67,18 +67,40 @@ body {
 }
 
 #word-container {
+    position: relative;
     width: 100%;
     border: 1px solid #ccc;
     border-radius: 50px;
     padding: 0 20px;
-    overflow: auto;
     height: 60px;
+    flex-grow: 1;
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.scroll-wrapper {
+    flex-grow: 1;
+    height: 100%;
+    overflow-x: auto;
+    padding-right: 60px;
+    /* Aumentato spazio per il pulsante */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    display: flex;
+    align-items: center;
+}
+
+.scroll-wrapper::-webkit-scrollbar {
+    display: none;
 }
 
 #word {
     white-space: pre;
     font-size: 50px;
     color: #3b3938;
+    padding-right: 10px;
 }
 
 #word:empty::before {
@@ -89,6 +111,25 @@ body {
 #word:not(:empty) {
     border-right: .10em solid #ffa500;
     animation: blink 1s step-end infinite;
+}
+
+#manage-dictionary {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #6495ed;
+    border-radius: 50px;
+    display: none;
+    z-index: 2;
+    pointer-events: auto;
+}
+
+#manage-dictionary svg {
+    width: 30px;
+    height: 30px;
+    pointer-events: none;
+    vertical-align: middle;
 }
 
 @keyframes blink {
@@ -110,12 +151,24 @@ body {
     margin-right: 20px;
     border: 1px solid #FFE082;
     border-radius: 25px;
-    cursor: pointer;
+
     user-select: none;
     height: 45px;
     white-space: nowrap;
     font-size: 40px;
     background-color: #FFFDE7;
+}
+
+.quick-word.sentence {
+    background: #6495ed;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+
+.quick-word.word {
+    background: #f0f0f0;
+    color: #333;
 }
 
 
@@ -211,7 +264,7 @@ body {
     margin-right: 20px;
     border: 1px solid #FFE082;
     border-radius: 25px;
-    cursor: pointer;
+
     user-select: none;
     white-space: nowrap;
     font-size: 20px;
@@ -230,19 +283,6 @@ body {
     transform: translateX(-50%);
 }
 
-#manage-dictionary {
-    background: none;
-    border: none;
-    padding: 10px;
-    margin-left: 10px;
-}
-
-#manage-dictionary svg {
-    fill: #fff;
-    width: 40px;
-    height: 40px;
-}
-
 button {
     display: inline-flex;
     align-items: center;
@@ -254,41 +294,39 @@ button {
     letter-spacing: 0.5px;
     border: none;
     border-radius: 4px;
-    cursor: pointer;
+
     outline: none;
     transition: background-color 0.3s, box-shadow 0.3s;
-  }
-  
-  #modal-cancel {
+}
+
+#modal-cancel {
     background-color: transparent;
     color: #6200ea;
-  }
-  
-  #modal-cancel:hover {
+}
+
+#modal-cancel:hover {
     background-color: rgba(98, 0, 234, 0.1);
-  }
-  
-  #modal-cancel:focus {
+}
+
+#modal-cancel:focus {
     box-shadow: 0 0 0 4px rgba(98, 0, 234, 0.3);
-  }
-  
-  #modal-ok {
+}
+
+#modal-ok {
     background-color: #6200ea;
     color: #ffffff;
-  }
-  
-  #modal-ok:hover {
+}
+
+#modal-ok:hover {
     background-color: #3700b3;
-  }
-  
-  #modal-ok:focus {
+}
+
+#modal-ok:focus {
     box-shadow: 0 0 0 4px rgba(98, 0, 234, 0.3);
-  }
-  
-  button:disabled {
+}
+
+button:disabled {
     background-color: #bdbdbd;
     color: #757575;
     cursor: not-allowed;
-  }
-
-  
+}

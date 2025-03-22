@@ -10,7 +10,7 @@ class QuickWord {
     }
 
     loadFromStorage() {
-        const storedWords = localStorage.getItem('dictionary');
+        const storedWords = sessionStorage.getItem('dictionary');
         if(storedWords) {
             this.#quickWords = JSON.parse(storedWords);
         } 
@@ -18,15 +18,15 @@ class QuickWord {
     }
 
     saveToStorage() {
-        localStorage.setItem('dictionary', JSON.stringify(this.#quickWords));
+        sessionStorage.setItem('dictionary', JSON.stringify(this.#quickWords));
     }
 
     addWord(word) {
         const normalized = word.trim().toLowerCase();
         if(!this.#quickWords.some(w => w.toLowerCase() === normalized)) {
             this.#quickWords.push(word.trim());
-            this.#sortedquickWords = [...this.#quickWords]; 
-            this.sortWords(); 
+            this.#sortedquickWords = [...this.#quickWords];
+            this.sortWords();
             this.saveToStorage();
             this.filterQuickWords('');
             this.generateQuickWords();
@@ -36,8 +36,8 @@ class QuickWord {
     removeWord(word) {
         const normalized = word.trim().toLowerCase();
         this.#quickWords = this.#quickWords.filter(w => w.toLowerCase() !== normalized);
-        this.#sortedquickWords = [...this.#quickWords]; 
-        this.sortWords(); 
+        this.#sortedquickWords = [...this.#quickWords];
+        this.sortWords();
         this.saveToStorage();
         this.filterQuickWords('');
         this.generateQuickWords();
@@ -62,7 +62,7 @@ class QuickWord {
                         const importedWords = JSON.parse(event.target.result);
                         const merged = [...new Set([...this.#quickWords, ...importedWords])];
                         this.#quickWords = merged;
-                        this.saveToStorage();
+                        this.saveToStorage(); // Ora usa sessionStorage
                         this.filterQuickWords('');
                     } catch(error) {
                         alert('Errore durante l\'importazione: Formato file non valido');
@@ -94,7 +94,7 @@ class QuickWord {
             return;
         }
         
-        this.#sortedquickWords.forEach(word => {
+        this.#sortedquickWords.sort((a, b) => a.length - b.length).forEach(word => {
             if (word.toLowerCase().startsWith(filterText)) {
                 this.addQuickWord(word)
             }
