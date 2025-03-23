@@ -100,7 +100,8 @@ function readText() {
                 updateText();
                 break;
             case 'eros db clear':
-                sessionStorage.clear();
+                keyboard.quickWord.clearDatabase()
+                keyboard.clearText();
                 break
             default:
                 // Create a SpeechSynthesisUtterance object to read the word
