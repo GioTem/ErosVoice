@@ -92,6 +92,7 @@ class QuickWord {
                 };
                 reader.readAsText(file);
             }
+            alert('Importazione del dizionario completata!')
         });
     }
 

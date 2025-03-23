@@ -84,7 +84,37 @@ class SingleTapKeyboard extends Keyboard {
             btn.addEventListener('touchstart', ev => this.handleKeyboardButtons(ev), { passive: true });
         });
         this.#eventList.forEach(el => this.clearButton.addEventListener(el, this.handleClearButton.bind(this), { passive: true }));
-        this.quickWord.quickWordsContainer.addEventListener('touchstart', this.quickWord.handleQuickWordClick, { passive: true }); 
+
+        const qw = this.quickWord.quickWordsContainer;
+        this.addQuickWordsScrollHandlers(qw);
+    }
+
+
+    addQuickWordsScrollHandlers(container) {
+        let touchStartX = 0;
+        let isScrolling = false;
+
+        container.addEventListener('touchstart', (e) => {
+            if (!e.target.classList.contains('quick-word')) return;
+            touchStartX = e.touches[0].clientX;
+            isScrolling = false;
+        }, { passive: true });
+
+        container.addEventListener('touchmove', (e) => {
+            if (!e.target.classList.contains('quick-word')) return;
+            const touchCurrentX = e.touches[0].clientX;
+            if (Math.abs(touchCurrentX - touchStartX) > 5) {
+                isScrolling = true;
+            }
+        }, { passive: true });
+
+        container.addEventListener('touchend', (e) => {
+            if (!e.target.classList.contains('quick-word')) return;
+            if (!isScrolling) {
+                this.quickWord.handleQuickWordClick(e);
+            }
+            isScrolling = false;
+        }, { passive: true });
     }
 
     handleClearButton(ev) {
@@ -94,7 +124,7 @@ class SingleTapKeyboard extends Keyboard {
                 this.clearText();
                 updateText();
                 this.quickWord.filterQuickWords(this.filterText);
-            }, 1000); 
+            }, 1000);
         }
         else {
             this.deleteLastCharacter();
@@ -127,7 +157,45 @@ class TapAndHoldKeyboard extends Keyboard {
         this.quickWord.quickWordsContainer.addEventListener('touchend', this.handleKeyboardButtons.bind(this));
         this.#eventList.forEach(el => this.clearButton.addEventListener(el, this.handleClearButton.bind(this)));
         this.#eventList.forEach(el => this.clearButton.addEventListener(el, this.handleClearButtonLongPress.bind(this)));
-        this.delay = delay; 
+        this.delay = delay;
+        const qw = this.quickWord.quickWordsContainer;
+        this.addQuickWordsScrollHandlers(qw);
+    }
+
+    addQuickWordsScrollHandlers(container) {
+        let touchStartX = 0;
+        let isScrolling = false;
+        let pressTimer;
+
+        container.addEventListener('touchstart', (e) => {
+            if (!e.target.classList.contains('quick-word')) return;
+            touchStartX = e.touches[0].clientX;
+            isScrolling = false;
+
+            pressTimer = setTimeout(() => {
+                this.insterQuickWord(e.target.textContent);
+            }, this.delay);
+        }, { passive: true });
+
+        container.addEventListener('touchmove', (e) => {
+            if (!e.target.classList.contains('quick-word')) return;
+            const touchCurrentX = e.touches[0].clientX;
+            if (Math.abs(touchCurrentX - touchStartX) > 5) {
+                isScrolling = true;
+                clearTimeout(pressTimer);
+            }
+        }, { passive: true });
+
+        container.addEventListener('touchend', (e) => {
+            if (!e.target.classList.contains('quick-word')) return;
+            clearTimeout(pressTimer);
+            isScrolling = false;
+        }, { passive: true });
+
+        container.addEventListener('touchcancel', (e) => {
+            clearTimeout(pressTimer);
+            isScrolling = false;
+        }, { passive: true });
     }
 
     handleKeyboardButtons(ev) {
@@ -169,7 +237,7 @@ class TapAndHoldKeyboard extends Keyboard {
                 this.clearText();
                 updateText();
                 this.quickWord.filterQuickWords(this.filterText);
-            }, this.delay*4);
+            }, this.delay * 4);
         }
         else {
             clearTimeout(this.#clearButtonLongPressTimer);

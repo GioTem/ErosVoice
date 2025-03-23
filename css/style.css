@@ -142,6 +142,9 @@ body {
     justify-content: left;
     height: 60px;
     color: #3b3938;
+    touch-action: pan-x;
+    overscroll-behavior-x: contain;
+    white-space: nowrap;
 }
 
 #quick-words>div {
@@ -236,28 +239,35 @@ body {
     background: white;
     padding: 20px;
     border-radius: 8px;
-    width: 50%;
-    height: 50%;
+    width: 80%;
+    height: 70%;
     overflow-y: auto;
     position: relative;
-    top: 25%;
-    left: 25%;
+    top: 10%;
+    left: 10%;
+}
+.modal-content> .title{
+    font-size: 40px;
+    margin-bottom: 50px;
 }
 
 #word-list {
+    width: 90%;
     justify-content: center;
     color: #3b3938;
+    margin: 0 auto;
+    text-align: center;
 }
 
 .word-item {
+    display: inline-block;
     padding: 5px 10px;
-    margin-right: 20px;
+    margin: 5px 20px;
     border: 1px solid #FFE082;
     border-radius: 25px;
-
     user-select: none;
     white-space: nowrap;
-    font-size: 20px;
+    font-size: 30px;
     background-color: #FFFDE7;
 }
 
