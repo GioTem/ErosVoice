@@ -161,5 +161,6 @@ function openDictionaryModal() {
 
 document.getElementById('manage-dictionary').addEventListener('click', openDictionaryModal);
 
+
 init();
 
