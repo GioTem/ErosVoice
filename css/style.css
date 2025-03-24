@@ -320,3 +320,26 @@ button {
     height: 68px;
     margin: 0 50px;
 }
+
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #666;
+}
+
+.loading-dots span {
+    opacity: 0;
+    animation: loadingDots 1.4s infinite;
+}
+
+.loading-dots span:nth-child(1) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(2) { animation-delay: 0.4s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes loadingDots {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
