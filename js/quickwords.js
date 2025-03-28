@@ -1,11 +1,6 @@
 class QuickWord {
     #isDataLoaded = false;
     #maxResults = 20;
-    #memoryCache = {
-        dictionary: [],
-        sentences: [],
-        timestamp: null
-    };
     #quickWords = [];
     loadingElement = null;
     operationStartTime = null;
@@ -17,41 +12,28 @@ class QuickWord {
         this.sentences = [];
         this.dictionary = [];
         this.setupModal();
-        this.#loadCacheFromStorage();
         this.showLoading();
-        
-        if(this.#memoryCache.dictionary.length > 0) {
-            this.dictionary = [...this.#memoryCache.dictionary];
-            this.sentences = [...this.#memoryCache.sentences];
-            this.filterQuickWords('');
-        }
 
         this.initDB().then(async () => {
-            if(this.#needsDataRefresh()) {
-                await this.loadFromStorage();
-            }
-            
+            await this.loadFromStorage();
             this.setupImport();
             this.#isDataLoaded = true;
             this.filterQuickWords('');
             this.hideLoading();
-            
-            setInterval(() => this.#backgroundRefresh(), 3600000);
         }).catch(error => {
             this.hideLoading();
             console.error('Errore inizializzazione:', error);
         });
     }
 
-    // *** METODI DI INIZIALIZZAZIONE ***
     async initDB() {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open('ErosLanguages', 1);
-            
+
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
                 const store = db.createObjectStore('words', { keyPath: 'word' });
-                
+
                 store.createIndex('prefix1_length', ['prefix1', 'length']);
                 store.createIndex('prefix2_length', ['prefix2', 'length']);
                 store.createIndex('prefix3_length', ['prefix3', 'length']);
@@ -66,72 +48,59 @@ class QuickWord {
         });
     }
 
-    // *** GESTIONE CACHE ***
-    #loadCacheFromStorage() {
-        try {
-            const cachedData = localStorage.getItem('languageCache_v2');
-            if(cachedData) {
-                const parsedData = JSON.parse(cachedData);
-                if(parsedData.timestamp > Date.now() - 86400000) {
-                    this.#memoryCache = {
-                        dictionary: parsedData.dictionary,
-                        sentences: parsedData.sentences,
-                        timestamp: parsedData.timestamp
-                    };
-                }
-            }
-        } catch(e) {
-            console.warn('Lettura cache locale fallita:', e);
+    async getDBInfo() {
+        if (!this.db) {
+            throw new Error('Database non inizializzato');
         }
-    }
-
-    #saveCacheToStorage() {
-        try {
-            localStorage.setItem('languageCache_v2', JSON.stringify({
-                dictionary: this.#memoryCache.dictionary,
-                sentences: this.#memoryCache.sentences,
-                timestamp: Date.now()
-            }));
-        } catch(e) {
-            console.warn('Salvataggio cache locale fallito:', e);
-        }
-    }
-
-    #needsDataRefresh() {
-        return !this.#memoryCache.timestamp || 
-               Date.now() - this.#memoryCache.timestamp > 7200000 ||
-               this.#memoryCache.dictionary.length === 0;
-    }
-
-    async #backgroundRefresh() {
-        if(this.#needsDataRefresh()) {
-            try {
-                await this.loadFromStorage();
-                this.filterQuickWords('');
-                this.showNotification('Dati aggiornati!');
-            } catch(e) {
-                console.warn('Aggiornamento background fallito:', e);
-            }
-        }
-    }
-
-    // *** CARICAMENTO DATI ***
-    async loadFromStorage() {
+    
         const transaction = this.db.transaction('words', 'readonly');
         const store = transaction.objectStore('words');
         
+        // Recupera la versione del database
+        const version = this.db.version;
+        
+        // Conta le frasi
+        const sentencesRequest = store.get('sentences');
+        const countRequest = store.count();
+        
+        const [sentencesEntry, totalEntries] = await Promise.all([
+            new Promise((resolve, reject) => {
+                sentencesRequest.onsuccess = () => resolve(sentencesRequest.result);
+                sentencesRequest.onerror = reject;
+            }),
+            new Promise((resolve, reject) => {
+                countRequest.onsuccess = () => resolve(countRequest.result);
+                countRequest.onerror = reject;
+            })
+        ]);
+    
+        const sentencesCount = sentencesEntry?.value?.length || 0;
+        const wordsCount = totalEntries - (sentencesEntry ? 1 : 0);
+    
+        return {
+            version: version,
+            sentencesCount: sentencesCount,
+            wordsCount: wordsCount,
+            totalEntries: totalEntries
+        };
+    }
+    
+    async loadFromStorage() {
+        const transaction = this.db.transaction('words', 'readonly');
+        const store = transaction.objectStore('words');
+
         return new Promise((resolve, reject) => {
             const wordsRequest = store.index('prefix1_length').openCursor();
             const sentencesRequest = store.get('sentences');
 
-            const tempDictionary = [];
+            this.dictionary = [];
             let tempSentences = [];
 
             wordsRequest.onsuccess = (e) => {
                 const cursor = e.target.result;
                 if (cursor) {
                     if (cursor.value.word !== 'sentences') {
-                        tempDictionary.push(cursor.value.word);
+                        this.dictionary.push(cursor.value.word);
                     }
                     cursor.continue();
                 }
@@ -143,38 +112,27 @@ class QuickWord {
             };
 
             transaction.oncomplete = () => {
-                this.#memoryCache = {
-                    dictionary: tempDictionary.sort((a, b) => a.length - b.length || a.localeCompare(b)),
-                    sentences: tempSentences,
-                    timestamp: Date.now()
-                };
-
-                this.#saveCacheToStorage();
-                this.dictionary = [...this.#memoryCache.dictionary];
-                this.sentences = [...this.#memoryCache.sentences];
+                this.dictionary.sort((a, b) => a.length - b.length || a.localeCompare(b));
+                this.sentences = tempSentences;
                 resolve();
+                console.log("COMPLETE");                
             };
 
             transaction.onerror = (e) => reject(e.target.error);
         });
     }
 
-    // *** INTERFACCIA UTENTE ***
     async filterQuickWords(value) {
         if (!this.#isDataLoaded) {
             this.showLoading();
             return;
         }
-        
+
         this.quickWordsContainer.innerHTML = '';
         const filterText = value.toLowerCase().trim();
-        
+
         if (!filterText) {
             this.displayResults(this.sentences, true);
-            if(this.#quickWords.length > 0) {
-                this.addSeparator('Parole Preferite');
-                this.displayResults(this.#quickWords);
-            }
             return;
         }
 
@@ -185,11 +143,11 @@ class QuickWord {
         const transaction = this.db.transaction('words', 'readonly');
         const store = transaction.objectStore('words');
         const index = store.index(indexName);
-        
+
         const results = [];
         const range = IDBKeyRange.bound([prefix, 0], [prefix, Infinity]);
         const request = index.openCursor(range);
-        
+
         request.onsuccess = (e) => {
             const cursor = e.target.result;
             if (cursor && results.length < this.#maxResults) {
@@ -202,7 +160,7 @@ class QuickWord {
                 } else {
                     this.displaySortedResults(results);
                 }
-            } else {
+            } else if(results.length > 0) {
                 this.displaySortedResults(results);
             }
         };
@@ -210,13 +168,15 @@ class QuickWord {
 
     showLoading() {
         if (this.loadingElement) return;
-        
+        // Crea elemento di caricamento
         this.loadingElement = document.createElement('DIV');
-        this.loadingElement.className = 'loading-container';
+        this.loadingElement.className = 'qw-loading-container';
         this.loadingElement.innerHTML = `
-            <div class="loading-text">Caricamento</div>
-            <div class="loading-dots">
-                <span>.</span><span>.</span><span>.</span>
+            <span>Caricamento</span>
+            <div class="qw-loading-dots">
+                <span>.</span>
+                <span>.</span>
+                <span>.</span>
             </div>
         `;
         this.quickWordsContainer.appendChild(this.loadingElement);
@@ -229,7 +189,6 @@ class QuickWord {
         }
     }
 
-    // *** GESTIONE MODAL ***
     setupModal() {
         const modalHTML = `
             <div id="progress-modal" class="qw-modal">
@@ -244,7 +203,7 @@ class QuickWord {
                     </div>
                     <div id="progress-status">Inizializzazione...</div>
                     <div id="results-summary" class="results-summary"></div>
-                    <button onclick="keyboard.quickWord.hideModal()" class="modal-close">Chiudi</button>
+                    <button id="modal-close-btn" onclick="keyboard.quickWord.hideModal()" class="modal-close" disabled>Chiudi</button>
                 </div>
             </div>
         `;
@@ -298,32 +257,19 @@ class QuickWord {
         `;
     }
 
-    showNotification(message) {
-        const notification = document.createElement('DIV');
-        notification.className = 'cache-notification';
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
-    }
-
-    // *** METODI DI GESTIONE DATI ***
     async handleManageDictionary(selectedWords) {
         const newWords = selectedWords
             .map(word => word.trim().toLowerCase())
-            .filter(word => 
-                word.length >= 2 && 
-                !this.dictionary.includes(word) &&
+            .filter(word =>
+                word.length >= 2 &&
+                !this.dictionary?.includes(word) &&
                 !this.#quickWords.includes(word)
             );
 
         if (newWords.length > 0) {
-            this.showModal('Aggiunta parole');
-            let processed = 0;
-            const total = newWords.length;
-            
             const transaction = this.db.transaction('words', 'readwrite');
             const store = transaction.objectStore('words');
-            
+
             for (const word of newWords) {
                 try {
                     await store.put({
@@ -333,56 +279,24 @@ class QuickWord {
                         prefix3: word.substring(0, 3),
                         length: word.length
                     });
-                    processed++;
-                    this.updateProgress((processed / total) * 100, `Aggiunta ${processed}/${total} parole`);
                 } catch (error) {
                     console.error('Errore aggiunta parola:', word, error);
                 }
             }
-            
-            await this.refreshCache();
+            this.dictionary = await this.loadFromStorage();
             this.#quickWords = [...new Set([...this.#quickWords, ...newWords])];
-            this.showResults({
-                'Parole aggiunte': newWords.length,
-                'Parole totali': this.dictionary.length
-            });
-            this.hideModal();
         }
-    }
-
-    async addWord(word) {
-        const normalized = word.trim().toLowerCase();
-        if (!normalized || this.dictionary.includes(normalized)) return;
-
-        const transaction = this.db.transaction('words', 'readwrite');
-        const store = transaction.objectStore('words');
-        
-        await store.put({
-            word: normalized,
-            prefix1: normalized.substring(0, 1),
-            prefix2: normalized.substring(0, 2),
-            prefix3: normalized.substring(0, 3),
-            length: normalized.length
-        });
-
-        await this.refreshCache();
     }
 
     async removeWord(word) {
         const normalized = word.trim().toLowerCase();
         const transaction = this.db.transaction('words', 'readwrite');
         const store = transaction.objectStore('words');
-        
+
         await store.delete(normalized);
-        await this.refreshCache();
+        this.dictionary = await this.loadFromStorage();
     }
 
-    async refreshCache() {
-        this.#memoryCache.timestamp = null;
-        await this.loadFromStorage();
-    }
-
-    // *** VISUALIZZAZIONE RISULTATI ***
     displayResults(results, isSentence = false) {
         this.quickWordsContainer.innerHTML = '';
         results.slice(0, this.#maxResults).forEach(content => {
@@ -407,17 +321,14 @@ class QuickWord {
         this.quickWordsContainer.appendChild(separator);
     }
 
-    // *** IMPORT/EXPORT ***
     async setupImport() {
         document.getElementById('importInput').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // 1. Mostra subito la modale
             this.showModal('Importazione in corso');
-            
             const reader = new FileReader();
-            
+
             reader.onload = async (event) => {
                 try {
                     const data = JSON.parse(event.target.result);
@@ -431,7 +342,7 @@ class QuickWord {
                     let errorCount = 0;
 
                     const startTime = Date.now();
-                    
+
                     for (const word of words) {
                         try {
                             const exists = await new Promise(resolve => {
@@ -460,11 +371,13 @@ class QuickWord {
                     }
 
                     if (data.sentences?.length > 0) {
-                        await store.put({ 
+                        await store.put({
                             word: 'sentences',
                             value: [...new Set(data.sentences.map(s => s.trim()))]
                         });
                     }
+
+                    clearInterval(this.progressInterval);
 
                     const totalTime = ((Date.now() - startTime) / 1000).toFixed(2);
                     this.showResults({
@@ -474,48 +387,45 @@ class QuickWord {
                         'Tempo impiegato': `${totalTime}s`
                     });
 
-                    await this.refreshCache();
+                    this.dictionary = await this.loadFromStorage();
                     this.updateProgress(100, 'Importazione completata!');
+                    this.filterQuickWords('');
 
+                    document.getElementById("modal-close-btn").disabled = false;
                 } catch (error) {
                     document.getElementById('progress-status').textContent = 'Errore durante l\'importazione: ' + error.message;
                     console.error(error);
                 } finally {
-                    // 2. Resetta l'input per permettere nuove selezioni
                     e.target.value = '';
                 }
             };
             reader.readAsText(file);
         });
     }
-    
+
     async clearDatabase() {
         if (this.db) this.db.close();
-        
+
         return new Promise((resolve, reject) => {
             const req = indexedDB.deleteDatabase('ErosLanguages');
-            
+
             req.onsuccess = () => {
                 this.sentences = [];
                 this.dictionary = [];
-                this.#memoryCache = { dictionary: [], sentences: [], timestamp: null };
-                this.#saveCacheToStorage();
                 this.#isDataLoaded = false;
                 this.initDB().then(() => {
                     this.filterQuickWords('');
-                    this.showNotification('Database resettato!');
                     resolve();
                 });
             };
 
             req.onerror = (event) => {
-                this.showNotification('Errore cancellazione: ' + event.target.error);
+                console.error('Errore cancellazione database:', event.target.error);
                 reject(event.target.error);
             };
         });
     }
 
-    // *** UTILITIES ***
     handleQuickWordClick(event) {
         if (event.target.classList.contains('quick-word')) {
             const word = event.target.textContent;
@@ -528,23 +438,18 @@ class QuickWord {
     }
 
     wordExists(word) {
-        return this.dictionary.includes(word.toLowerCase());
-    }
-
-    getWords() {
-        return this.dictionary;
+        return this.dictionary?.includes(word.toLowerCase()) ?? false;
     }
 }
 
-// *** EXPORT ***
 async function exportDictionary() {
     keyboard.quickWord.showModal('Esportazione in corso');
     const startTime = Date.now();
-    
+
     try {
         const transaction = keyboard.quickWord.db.transaction('words', 'readonly');
         const store = transaction.objectStore('words');
-        
+
         const allData = await new Promise(resolve => {
             const request = store.getAll();
             request.onsuccess = (e) => resolve(e.target.result);
@@ -561,7 +466,7 @@ async function exportDictionary() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `dictionary-export-${new Date().toISOString().slice(0,10)}.json`;
+        a.download = `dictionary-export-${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
         URL.revokeObjectURL(url);
 

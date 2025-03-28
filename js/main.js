@@ -70,8 +70,42 @@ function readText() {
     if (tmp !== '') {
         switch (tmp) {
             case 'eros info':
-                alert("Software version: V" + settings.version);
-                keyboard.clearText()
+                // Mostra la modale
+                const infoModal = document.getElementById('info-modal');
+                const closeSpan = infoModal.querySelector('.close');
+
+                // Mostra la versione software
+                document.getElementById('software-version').textContent = settings.version;
+
+                // Funzione per chiudere la modale
+                closeSpan.onclick = () => infoModal.style.display = "none";
+                window.onclick = (event) => {
+                    if (event.target === infoModal) infoModal.style.display = "none";
+                };
+
+                // Mostra caricamento
+                ['db-version', 'db-words', 'db-sentences'].forEach(id => {
+                    document.getElementById(id).textContent = 'Caricamento...';
+                });
+
+                infoModal.style.display = "block";
+
+                // Carica i dati del database
+                keyboard.quickWord.getDBInfo()
+                    .then(info => {
+                        document.getElementById('db-version').textContent = info.version;
+                        document.getElementById('db-words').textContent = info.wordsCount;
+                        document.getElementById('db-sentences').textContent = info.sentencesCount;
+                    })
+                    .catch(error => {
+                        console.error('Errore caricamento info DB:', error);
+                        document.getElementById('db-version').textContent = 'Errore!';
+                        document.getElementById('db-words').textContent = 'Errore!';
+                        document.getElementById('db-sentences').textContent = 'Errore!';
+                    });
+
+                keyboard.clearText();
+                updateText();
                 break;
             case 'tanti auguri eros':
                 let count = 0;
@@ -104,13 +138,21 @@ function readText() {
                 keyboard.clearText();
                 break
             default:
-                // Create a SpeechSynthesisUtterance object to read the word
-                const message = new SpeechSynthesisUtterance(keyboard.getText());
-                // Use the default browser's speech synthesis
-                window.speechSynthesis.speak(message);
-                keyboard.setLastText(keyboard.getText())
-                keyboard.clearText();
-                updateText();
+                if (tmp.startsWith('eros word remove')) {
+                    const extractedWord = tmp.substring("eros word remove".length).trim();
+                    keyboard.quickWord.removeWord(extractedWord)
+                    keyboard.clearText();
+                    alert("Parola rimossa: " + extractedWord)
+                }
+                else {
+                    // Create a SpeechSynthesisUtterance object to read the word
+                    const message = new SpeechSynthesisUtterance(keyboard.getText());
+                    // Use the default browser's speech synthesis
+                    window.speechSynthesis.speak(message);
+                    keyboard.setLastText(keyboard.getText())
+                    keyboard.clearText();
+                    updateText();
+                }
                 break;
         }
     }
@@ -122,13 +164,13 @@ function readText() {
     updateText();
 }
 
-function openDictionaryModal() {
+function openDictionaryModal() {    
     const modal = document.getElementById('dictionary-modal');
     const wordList = document.getElementById('word-list');
     const currentText = keyboard.getText();
 
     const words = currentText.split(' ')
-    .map(w => w.trim().replace(/\?/g, ''))
+        .map(w => w.trim().replace(/[\s?]/g, "").toLowerCase())
         .filter(w => w.length >= 2 && !keyboard.quickWord.wordExists(w));
 
     wordList.innerHTML = words.map((word, index) => `
@@ -151,7 +193,10 @@ function openDictionaryModal() {
 
         keyboard.quickWord.handleManageDictionary(selectedWords);
         modal.style.display = 'none';
+        keyboard.clearFilterText();
+        keyboard.clearText();
         updateText();
+        keyboard.quickWord.filterQuickWords('');
     };
 
     document.getElementById('modal-cancel').onclick = () => {
