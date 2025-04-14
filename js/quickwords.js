@@ -1,7 +1,6 @@
 class QuickWord {
     #isDataLoaded = false;
     #maxResults = 20;
-    #quickWords = [];
     loadingElement = null;
     operationStartTime = null;
     progressInterval = null;
@@ -262,8 +261,7 @@ class QuickWord {
             .map(word => word.trim().toLowerCase())
             .filter(word =>
                 word.length >= 2 &&
-                !this.dictionary?.includes(word) &&
-                !this.#quickWords.includes(word)
+                !this.dictionary?.includes(word)
             );
 
         if (newWords.length > 0) {
@@ -283,8 +281,7 @@ class QuickWord {
                     console.error('Errore aggiunta parola:', word, error);
                 }
             }
-            this.dictionary = await this.loadFromStorage();
-            this.#quickWords = [...new Set([...this.#quickWords, ...newWords])];
+            await this.loadFromStorage();
         }
     }
 
@@ -294,7 +291,7 @@ class QuickWord {
         const store = transaction.objectStore('words');
 
         await store.delete(normalized);
-        this.dictionary = await this.loadFromStorage();
+        await this.loadFromStorage();
     }
 
     displayResults(results, isSentence = false) {
@@ -387,7 +384,7 @@ class QuickWord {
                         'Tempo impiegato': `${totalTime}s`
                     });
 
-                    this.dictionary = await this.loadFromStorage();
+                    await this.loadFromStorage();
                     this.updateProgress(100, 'Importazione completata!');
                     this.filterQuickWords('');
 
@@ -438,7 +435,7 @@ class QuickWord {
     }
 
     wordExists(word) {
-        return this.dictionary?.includes(word.toLowerCase()) ?? false;
+        return this.dictionary.includes(word.toLowerCase());
     }
 }
 
